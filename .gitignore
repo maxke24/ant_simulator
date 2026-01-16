@@ -1,0 +1,7 @@
+# Claude
+CLAUDE.md
+.claude/
+
+# Rust
+/target/
+Cargo.lock
