@@ -9,10 +9,10 @@ pub struct Ant {
 }
 
 impl Ant {
-    pub fn new() -> Self {
+    pub fn new(screen_w: f32, screen_h: f32) -> Self {
         Self {
-            x: screen_width() / 2.0,
-            y: screen_height() / 2.0,
+            x: rand::gen_range(10.0, screen_w - 10.0),
+            y: rand::gen_range(10.0, screen_h - 10.0),
             w: 2.0,
             h: 5.0,
             angle: rand::gen_range(0.0, 360.0),

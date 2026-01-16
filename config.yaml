@@ -1,0 +1,8 @@
+window_width: 1920
+window_height: 1080
+ant_count: 500
+ant_speed: 2.0
+
+# Colors are [Red, Green, Blue] (0-255)
+background_color: [10, 10, 10]  # Dark Gray
+ant_color: [255, 255, 255]      # White
