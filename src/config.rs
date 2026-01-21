@@ -12,6 +12,8 @@ pub struct Settings {
     // We load these as simple lists of numbers first
     pub background_color: [u8; 3],
     pub ant_color: [u8; 3],
+    pub food_color: [u8; 3],
+    pub pheromone_color: [u8; 3],
 }
 
 impl Settings {
@@ -29,6 +31,14 @@ impl Settings {
 
     pub fn get_ant_color(&self) -> Color {
         self.u8_to_color(self.ant_color)
+    }
+
+    pub fn get_food_color(&self) -> Color {
+        self.u8_to_color(self.food_color)
+    }
+
+    pub fn get_pheromone_color(&self) -> Color {
+        self.u8_to_color(self.pheromone_color)
     }
 
     fn u8_to_color(&self, rgb: [u8; 3]) -> Color {
