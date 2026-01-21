@@ -1,7 +1,9 @@
 window_width: 1920
 window_height: 1080
-ant_count: 5000
-ant_speed: 2.0
+ant_count: 500
+ant_speed: 0.5
+ant_scale: 0.1
+animation_speed: 0.04  # seconds per frame (higher = slower legs)
 
 # Catppuccin Macchiato Theme
 background_color: [36, 39, 58]    # Base

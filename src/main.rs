@@ -27,24 +27,25 @@ async fn main() {
     let actual_w = screen_width();
     let actual_h = screen_height();
 
-    let mut nest = Nest::new(actual_w, actual_h);
+    // Load ant spritesheet (white version for color tinting)
+    let ant_texture = load_texture("walk_white.png").await.expect("Failed to load walk_white.png");
+
+    let nest = Nest::new(actual_w, actual_h);
 
     let mut ants: Vec<Ant> = (0..settings.ant_count)
         .map(|_| Ant::new(nest.x, nest.y))
         .collect();
+
     loop {
+        let delta = get_frame_time();
+
         clear_background(settings.get_bg_color());
+
         for ant in ants.iter_mut() {
-            draw_ellipse(
-                ant.x,
-                ant.y,
-                ant.w,
-                ant.h,
-                ant.angle - 90.0,
-                settings.get_ant_color(),
-            );
-            ant.update(screen_width(), screen_height());
+            ant.update(screen_width(), screen_height(), settings.ant_speed, delta, settings.animation_speed);
+            ant.draw(&ant_texture, settings.get_ant_color(), settings.ant_scale);
         }
+
         draw_circle(nest.x, nest.y, nest.radius, settings.get_nest_color());
         next_frame().await;
     }

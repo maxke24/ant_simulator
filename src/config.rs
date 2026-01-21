@@ -8,6 +8,8 @@ pub struct Settings {
     pub window_height: i32,
     pub ant_count: usize,
     pub ant_speed: f32,
+    pub ant_scale: f32,
+    pub animation_speed: f32, // seconds per frame (higher = slower)
 
     // We load these as simple lists of numbers first
     pub background_color: [u8; 3],
