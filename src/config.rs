@@ -14,6 +14,7 @@ pub struct Settings {
     pub ant_color: [u8; 3],
     pub food_color: [u8; 3],
     pub pheromone_color: [u8; 3],
+    pub nest_color: [u8; 3],
 }
 
 impl Settings {
@@ -39,6 +40,10 @@ impl Settings {
 
     pub fn get_pheromone_color(&self) -> Color {
         self.u8_to_color(self.pheromone_color)
+    }
+
+    pub fn get_nest_color(&self) -> Color {
+        self.u8_to_color(self.nest_color)
     }
 
     fn u8_to_color(&self, rgb: [u8; 3]) -> Color {

@@ -5,16 +5,22 @@ pub struct Ant {
     pub y: f32,
     pub w: f32,
     pub h: f32,
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
     pub angle: f32,
 }
 
 impl Ant {
-    pub fn new(screen_w: f32, screen_h: f32) -> Self {
+    pub fn new(nest_x: f32, nest_y: f32) -> Self {
         Self {
-            x: rand::gen_range(10.0, screen_w - 10.0),
-            y: rand::gen_range(10.0, screen_h - 10.0),
+            x: nest_x,
+            y: nest_y,
             w: 2.0,
             h: 5.0,
+            r: rand::gen_range(0, 255),
+            g: rand::gen_range(0, 255),
+            b: rand::gen_range(0, 255),
             angle: rand::gen_range(0.0, 360.0),
         }
     }

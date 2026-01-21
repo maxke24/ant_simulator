@@ -1,10 +1,11 @@
 window_width: 1920
 window_height: 1080
-ant_count: 500
+ant_count: 5000
 ant_speed: 2.0
 
 # Catppuccin Macchiato Theme
 background_color: [36, 39, 58]    # Base
 ant_color:        [183, 189, 248] # Lavender
+nest_color:       [255, 255, 255] # White
 food_color:       [166, 218, 149] # Green
 pheromone_color:  [245, 169, 127] # Peach
