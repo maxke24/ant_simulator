@@ -5,6 +5,9 @@ ant_speed: 0.5
 ant_scale: 0.1
 animation_speed: 0.04  # seconds per frame (higher = slower legs)
 
+pheromone_size: 2
+decay_rate: 0.002
+
 # Catppuccin Macchiato Theme
 background_color: [36, 39, 58]    # Base
 ant_color:        [183, 189, 248] # Lavender

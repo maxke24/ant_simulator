@@ -1,3 +1,6 @@
+use crate::config::Settings;
+use crate::pheromone::Pheromone;
+use crate::pheromone::PheromoneType;
 use macroquad::prelude::*;
 
 // Spritesheet constants
@@ -11,6 +14,9 @@ pub struct Ant {
     pub angle: f32,
     pub animation_frame: usize,
     pub animation_timer: f32,
+    pub pheromone_timer: f32,
+    pub state: PheromoneType,
+    pub drop_frequency: f32,
 }
 
 impl Ant {
@@ -21,19 +27,15 @@ impl Ant {
             angle: rand::gen_range(0.0, 360.0),
             animation_frame: rand::gen_range(0, SPRITE_FRAMES as u32) as usize,
             animation_timer: 0.0,
+            pheromone_timer: 0.0,
+            state: PheromoneType::Searching,
+            drop_frequency: rand::gen_range(0.8, 2.2),
         }
     }
 
-    pub fn update(
-        &mut self,
-        screen_w: f32,
-        screen_h: f32,
-        speed: f32,
-        delta: f32,
-        animation_speed: f32,
-    ) {
-        let dx = f32::cos(self.angle.to_radians()) * speed;
-        let dy = f32::sin(self.angle.to_radians()) * speed;
+    pub fn update(&mut self, delta: f32, settings: &Settings) -> Option<Pheromone> {
+        let dx = f32::cos(self.angle.to_radians()) * settings.ant_speed;
+        let dy = f32::sin(self.angle.to_radians()) * settings.ant_speed;
         self.x += dx;
         self.y += dy;
 
@@ -42,24 +44,31 @@ impl Ant {
 
         // Update animation
         self.animation_timer += delta;
-        if self.animation_timer > animation_speed {
+        if self.animation_timer > settings.animation_speed {
             self.animation_timer = 0.0;
             self.animation_frame = (self.animation_frame + 1) % SPRITE_FRAMES;
         }
 
         // Screen wrapping
         if self.x < 0.0 {
-            self.x = screen_w;
+            self.x = settings.window_width as f32;
         }
-        if self.x > screen_w {
+        if self.x > settings.window_width as f32 {
             self.x = 0.0;
         }
         if self.y < 0.0 {
-            self.y = screen_h;
+            self.y = settings.window_height as f32;
         }
-        if self.y > screen_h {
+        if self.y > settings.window_height as f32 {
             self.y = 0.0;
         }
+
+        self.pheromone_timer += delta;
+        if self.pheromone_timer > self.drop_frequency {
+            self.pheromone_timer = 0.0;
+            return Some(Pheromone::new(self.x, self.y, self.state));
+        }
+        None
     }
 
     pub fn draw(&self, texture: &Texture2D, color: Color, scale: f32) {

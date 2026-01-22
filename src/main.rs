@@ -1,11 +1,13 @@
 mod ant;
 mod config;
+mod food;
 mod nest;
+mod pheromone;
+mod world;
 
-use ant::Ant;
 use config::Settings;
 use macroquad::prelude::*;
-use nest::Nest;
+use world::World;
 
 fn window_conf() -> Conf {
     Conf {
@@ -24,29 +26,16 @@ async fn main() {
     next_frame().await;
     rand::srand(macroquad::miniquad::date::now() as u64);
 
-    let actual_w = screen_width();
-    let actual_h = screen_height();
-
     // Load ant spritesheet (white version for color tinting)
-    let ant_texture = load_texture("walk_white.png").await.expect("Failed to load walk_white.png");
-
-    let nest = Nest::new(actual_w, actual_h);
-
-    let mut ants: Vec<Ant> = (0..settings.ant_count)
-        .map(|_| Ant::new(nest.x, nest.y))
-        .collect();
-
+    let ant_texture = load_texture("walk_white.png")
+        .await
+        .expect("Failed to load walk_white.png");
+    let mut world = World::new(&settings);
     loop {
         let delta = get_frame_time();
 
         clear_background(settings.get_bg_color());
-
-        for ant in ants.iter_mut() {
-            ant.update(screen_width(), screen_height(), settings.ant_speed, delta, settings.animation_speed);
-            ant.draw(&ant_texture, settings.get_ant_color(), settings.ant_scale);
-        }
-
-        draw_circle(nest.x, nest.y, nest.radius, settings.get_nest_color());
+        world.update(&settings, delta, &ant_texture);
         next_frame().await;
     }
 }
