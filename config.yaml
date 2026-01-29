@@ -13,4 +13,5 @@ background_color: [36, 39, 58]    # Base
 ant_color:        [183, 189, 248] # Lavender
 nest_color:       [255, 255, 255] # White
 food_color:       [166, 218, 149] # Green
-pheromone_color:  [245, 169, 127] # Peach
+pheromone_to_food_color: [245, 169, 127]  # Peach (Returning state)
+pheromone_to_nest_color: [138, 173, 244]  # Blue (Searching state)

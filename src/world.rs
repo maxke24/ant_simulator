@@ -2,7 +2,7 @@ use crate::Settings;
 use crate::ant::Ant;
 use crate::food::Food;
 use crate::nest::Nest;
-use crate::pheromone::{Pheromone, PheromoneType};
+use crate::pheromone::Pheromone;
 use macroquad::prelude::*;
 
 pub struct World {
@@ -18,13 +18,9 @@ impl World {
         let screen_w = settings.window_width as f32;
         let screen_h = settings.window_height as f32;
         let nest = Nest::new(screen_w, screen_h);
-        let nest_x = nest.x;
-        let nest_y = nest.y;
         Self {
             nest,
-            ants: (0..settings.ant_count)
-                .map(|_| Ant::new(nest_x, nest_y))
-                .collect(),
+            ants: (0..settings.ant_count).map(|_| Ant::new(nest)).collect(),
             food: Food::new(screen_w, screen_h, pieces),
             pheromones: Vec::new(),
         }
@@ -32,31 +28,27 @@ impl World {
 
     pub fn update(&mut self, settings: &Settings, delta: f32, ant_texture: &Texture2D) {
         draw_circle(
-            self.food.x,
-            self.food.y,
+            self.food.location.x,
+            self.food.location.y,
             self.food.radius(),
             settings.get_food_color(),
         );
 
         for ant in self.ants.iter_mut() {
-            if let Some(pheromone) = ant.update(delta, settings) {
+            if let Some(pheromone) = ant.update(delta, settings, &mut self.food) {
                 self.pheromones.push(pheromone);
             }
             ant.draw(ant_texture, settings.get_ant_color(), settings.ant_scale);
         }
         for pheromone in self.pheromones.iter_mut() {
-            pheromone.update(
-                settings.pheromone_size,
-                settings.get_pheromone_color(),
-                settings.decay_rate,
-            );
+            pheromone.update();
         }
 
         self.pheromones.retain(|p| p.strength > 0.0);
 
         draw_circle(
-            self.nest.x,
-            self.nest.y,
+            self.nest.location.x,
+            self.nest.location.y,
             self.nest.radius,
             settings.get_nest_color(),
         );

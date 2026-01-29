@@ -3,6 +3,7 @@ mod config;
 mod food;
 mod nest;
 mod pheromone;
+mod point;
 mod world;
 
 use config::Settings;

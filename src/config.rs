@@ -2,6 +2,8 @@ use macroquad::prelude::Color;
 use serde::Deserialize;
 use std::fs;
 
+use crate::pheromone::PheromoneType;
+
 #[derive(Debug, Deserialize)]
 pub struct Settings {
     pub window_width: i32,
@@ -18,8 +20,9 @@ pub struct Settings {
     pub background_color: [u8; 3],
     pub ant_color: [u8; 3],
     pub food_color: [u8; 3],
-    pub pheromone_color: [u8; 3],
     pub nest_color: [u8; 3],
+    pub pheromone_to_food_color: [u8; 3],
+    pub pheromone_to_nest_color: [u8; 3],
 }
 
 impl Settings {
@@ -43,8 +46,12 @@ impl Settings {
         self.u8_to_color(self.food_color)
     }
 
-    pub fn get_pheromone_color(&self) -> Color {
-        self.u8_to_color(self.pheromone_color)
+    pub fn get_pheromone_color(&self, pheromone: PheromoneType) -> Color {
+        if pheromone == PheromoneType::Returning {
+            self.u8_to_color(self.pheromone_to_nest_color)
+        } else {
+            self.u8_to_color(self.pheromone_to_food_color)
+        }
     }
 
     pub fn get_nest_color(&self) -> Color {

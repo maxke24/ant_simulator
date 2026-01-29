@@ -1,17 +1,19 @@
 use macroquad::prelude::*;
 
+use crate::point::Point;
+
 pub struct Food {
-    pub x: f32,
-    pub y: f32,
+    pub location: Point,
     pub pieces_remaining: u32,
     pub max_pieces: u32,
 }
 
 impl Food {
     pub fn new(screen_w: f32, screen_h: f32, pieces: u32) -> Self {
+        let x = rand::gen_range(30.0, screen_w - 30.0);
+        let y = rand::gen_range(30.0, screen_h - 30.0);
         Self {
-            x: rand::gen_range(30.0, screen_w - 30.0),
-            y: rand::gen_range(30.0, screen_h - 30.0),
+            location: Point { x, y },
             max_pieces: pieces,
             pieces_remaining: pieces,
         }
