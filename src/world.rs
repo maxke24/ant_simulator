@@ -3,6 +3,7 @@ use crate::ant::Ant;
 use crate::food::Food;
 use crate::nest::Nest;
 use crate::pheromone::Pheromone;
+use crate::spatial_grid::SpatialGrid;
 use macroquad::prelude::*;
 
 pub struct World {
@@ -10,6 +11,7 @@ pub struct World {
     pub ants: Vec<Ant>,
     pub food: Food,
     pub pheromones: Vec<Pheromone>,
+    pub grid: SpatialGrid,
 }
 
 impl World {
@@ -20,9 +22,12 @@ impl World {
         let nest = Nest::new(screen_w, screen_h);
         Self {
             nest,
-            ants: (0..settings.ant_count).map(|_| Ant::new(nest)).collect(),
+            ants: (0..settings.ant_count)
+                .map(|_| Ant::new(nest, settings))
+                .collect(),
             food: Food::new(screen_w, screen_h, pieces),
             pheromones: Vec::new(),
+            grid: SpatialGrid::new(40.0),
         }
     }
 
@@ -35,7 +40,13 @@ impl World {
         );
 
         for ant in self.ants.iter_mut() {
-            if let Some(pheromone) = ant.update(delta, settings, &mut self.food) {
+            if let Some(pheromone) = ant.update(
+                delta,
+                settings,
+                &mut self.food,
+                &self.pheromones,
+                &mut self.grid,
+            ) {
                 self.pheromones.push(pheromone);
             }
             ant.draw(ant_texture, settings.get_ant_color(), settings.ant_scale);
@@ -52,5 +63,6 @@ impl World {
             self.nest.radius,
             settings.get_nest_color(),
         );
+        self.grid.rebuild(&self.pheromones);
     }
 }

@@ -8,10 +8,14 @@ use crate::pheromone::PheromoneType;
 pub struct Settings {
     pub window_width: i32,
     pub window_height: i32,
+    pub animation_speed: f32, // seconds per frame (higher = slower)
+
     pub ant_count: usize,
     pub ant_speed: f32,
     pub ant_scale: f32,
-    pub animation_speed: f32, // seconds per frame (higher = slower)
+    pub sensor_range: f32,
+    pub pheromone_influence: f32,
+    pub turn_speed: f32,
 
     pub pheromone_size: f32,
     pub decay_rate: f32,

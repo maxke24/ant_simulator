@@ -1,12 +1,16 @@
 window_width: 1920
 window_height: 1080
+animation_speed: 0.04  # seconds per frame (higher = slower legs)
+
 ant_count: 500
 ant_speed: 0.5
 ant_scale: 0.1
-animation_speed: 0.04  # seconds per frame (higher = slower legs)
+sensor_range: 50.0           # How far ants can "smell" pheromones
+pheromone_influence: 0.3     # 0-1, how much pheromones affect direction
+turn_speed: 5.0              # Degrees per frame when following pheromones
 
 pheromone_size: 2
-decay_rate: 0.002
+decay_rate: 0.0005
 
 # Catppuccin Macchiato Theme
 background_color: [36, 39, 58]    # Base
@@ -15,3 +19,4 @@ nest_color:       [255, 255, 255] # White
 food_color:       [166, 218, 149] # Green
 pheromone_to_food_color: [245, 169, 127]  # Peach (Returning state)
 pheromone_to_nest_color: [138, 173, 244]  # Blue (Searching state)
+

@@ -4,6 +4,7 @@ mod food;
 mod nest;
 mod pheromone;
 mod point;
+mod spatial_grid;
 mod world;
 
 use config::Settings;

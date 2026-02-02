@@ -4,6 +4,7 @@ use crate::nest::Nest;
 use crate::pheromone::Pheromone;
 use crate::pheromone::PheromoneType;
 use crate::point::Point;
+use crate::spatial_grid::SpatialGrid;
 use macroquad::prelude::*;
 
 // Spritesheet constants
@@ -20,10 +21,13 @@ pub struct Ant {
     pub state: PheromoneType,
     pub drop_frequency: f32,
     pub nest: Nest,
+    pub sensor_range: f32,
+    pub pheromone_influence: f32,
+    pub turn_speed: f32,
 }
 
 impl Ant {
-    pub fn new(nest: Nest) -> Self {
+    pub fn new(nest: Nest, settings: &Settings) -> Self {
         Self {
             location: nest.location,
             angle: rand::gen_range(0.0, 360.0),
@@ -31,12 +35,57 @@ impl Ant {
             animation_timer: 0.0,
             pheromone_timer: 0.0,
             state: PheromoneType::Searching,
-            drop_frequency: rand::gen_range(0.8, 2.2),
+            drop_frequency: rand::gen_range(1.0, 2.0),
             nest,
+            sensor_range: settings.sensor_range,
+            pheromone_influence: settings.pheromone_influence,
+            turn_speed: settings.turn_speed,
         }
     }
 
-    pub fn update(&mut self, delta: f32, settings: &Settings, fd: &mut Food) -> Option<Pheromone> {
+    pub fn update(
+        &mut self,
+        delta: f32,
+        settings: &Settings,
+        fd: &mut Food,
+        pheromones: &Vec<Pheromone>,
+        grid: &mut SpatialGrid,
+    ) -> Option<Pheromone> {
+        let target_type = if self.state == PheromoneType::Searching {
+            PheromoneType::Returning
+        } else {
+            PheromoneType::Searching
+        };
+
+        let nearby_pheromones = self.pheromones_within_radius(&pheromones, grid);
+        let relevant_pheromones: Vec<&Pheromone> = nearby_pheromones
+            .into_iter()
+            .filter(|p| p.pheromone == target_type)
+            .filter(|p| p.strength < 0.95)
+            .collect();
+
+        if let Some(target_pos) = self.get_steering_target(relevant_pheromones) {
+            // Calculate direction FROM ant TO target
+            let dx = target_pos.x - self.location.x;
+            let dy = target_pos.y - self.location.y;
+
+            // Convert direction to an angle (in degrees)
+            let target_angle = dy.atan2(dx).to_degrees();
+
+            // Calculate how much we need to turn
+            // (this handles wraparound, e.g., 350° to 10° = +20°, not -340°)
+            let mut angle_diff = target_angle - self.angle;
+            while angle_diff > 180.0 {
+                angle_diff -= 360.0;
+            }
+            while angle_diff < -180.0 {
+                angle_diff += 360.0;
+            }
+
+            // Turn gradually toward the target (controlled by turn_speed)
+            self.angle += angle_diff.clamp(-self.turn_speed, self.turn_speed);
+        }
+
         let dx = f32::cos(self.angle.to_radians()) * settings.ant_speed;
         let dy = f32::sin(self.angle.to_radians()) * settings.ant_speed;
         self.location.x += dx;
@@ -90,8 +139,38 @@ impl Ant {
         None
     }
 
+    fn get_steering_target(&self, pheromones: Vec<&Pheromone>) -> Option<Point> {
+        if pheromones.is_empty() {
+            return None;
+        }
+
+        let mut weighted_x = 0.0;
+        let mut weighted_y = 0.0;
+        let mut total_weight = 0.0;
+
+        for p in &pheromones {
+            let weight = (1.0 - p.strength).max(0.1);
+            weighted_x += p.location.x * weight;
+            weighted_y += p.location.y * weight;
+            total_weight += weight;
+        }
+
+        Some(Point {
+            x: weighted_x / total_weight,
+            y: weighted_y / total_weight,
+        })
+    }
+
     fn distance_to(&self, target: Point) -> f32 {
         f32::abs(self.location.x - target.x) + f32::abs(self.location.y - target.y)
+    }
+
+    fn pheromones_within_radius<'a>(
+        &self,
+        pheromones: &'a Vec<Pheromone>,
+        grid: &'a SpatialGrid,
+    ) -> Vec<&'a Pheromone> {
+        grid.query(self, pheromones)
     }
 
     pub fn draw(&self, texture: &Texture2D, color: Color, scale: f32) {
